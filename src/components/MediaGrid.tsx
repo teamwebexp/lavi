@@ -23,14 +23,14 @@ export const MediaGrid: React.FC<MediaGridProps> = ({
 
   if (totalFilteredCount === 0) {
     return (
-      <div className="py-20 text-center rounded-3xl bg-stone-50 border border-stone-200/80 p-8">
-        <div className="w-14 h-14 mx-auto rounded-full bg-stone-100 flex items-center justify-center text-stone-400 mb-3">
+      <div className="py-20 text-center rounded-3xl bg-stone-50 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 p-8 transition-colors">
+        <div className="w-14 h-14 mx-auto rounded-full bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-stone-400 dark:text-stone-500 mb-3">
           <ImageIcon className="w-6 h-6 stroke-[1.5]" />
         </div>
-        <h3 className="font-serif-display text-xl font-bold text-stone-800">
+        <h3 className="font-serif-display text-xl font-bold text-stone-800 dark:text-stone-200">
           No memories found
         </h3>
-        <p className="text-sm text-stone-500 mt-1 max-w-sm mx-auto">
+        <p className="text-sm text-stone-500 dark:text-stone-400 mt-1 max-w-sm mx-auto">
           Try adjusting your search terms, date filters, or media type selection.
         </p>
       </div>
@@ -57,18 +57,18 @@ export const MediaGrid: React.FC<MediaGridProps> = ({
         return (
           <section key={group.monthKey} className="space-y-5">
             {/* Automatic Month Header (e.g., September 2026) */}
-            <div className="flex items-center justify-between border-b border-stone-200/80 pb-3">
+            <div className="flex items-center justify-between border-b border-stone-200/80 dark:border-stone-800 pb-3">
               <div className="flex items-baseline gap-3">
-                <h3 className="font-serif-display text-2xl sm:text-3xl font-bold text-stone-900">
+                <h3 className="font-serif-display text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-100">
                   {group.label}
                 </h3>
-                <span className="text-xs text-stone-500 font-medium">
+                <span className="text-xs text-stone-500 dark:text-stone-400 font-medium">
                   {group.items.length} {group.items.length === 1 ? 'memory' : 'memories'}
                 </span>
               </div>
 
               {/* Clean Unboxed Metadata with Typographic Separator */}
-              <div className="text-xs text-stone-500 hidden sm:flex items-center gap-2">
+              <div className="text-xs text-stone-500 dark:text-stone-400 hidden sm:flex items-center gap-2">
                 <span>{photoCount} photos</span>
                 <span aria-hidden="true">·</span>
                 <span>{videoCount} videos</span>
@@ -96,7 +96,7 @@ export const MediaGrid: React.FC<MediaGridProps> = ({
         <div className="text-center pt-6 pb-4">
           <button
             onClick={() => setDisplayBatchLimit(prev => prev + 36)}
-            className="px-6 py-3 rounded-xl bg-white border border-stone-200 text-stone-800 text-sm font-semibold hover:bg-stone-50 shadow-2xs transition-colors cursor-pointer"
+            className="px-6 py-3 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 text-stone-800 dark:text-stone-200 text-sm font-semibold hover:bg-stone-50 dark:hover:bg-stone-800 shadow-2xs transition-colors cursor-pointer"
           >
             Load More Memories ({totalFilteredCount - displayBatchLimit} remaining)
           </button>

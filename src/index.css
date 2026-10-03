@@ -1,9 +1,15 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   html {
     scroll-behavior: smooth;
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+  
+  html.dark {
+    color-scheme: dark;
   }
 }
 
@@ -51,3 +57,66 @@
 .group:hover .memory-image-zoom {
   transform: scale(1.04);
 }
+
+/* Ken Burns subtle animated photo effect */
+@keyframes kenBurnsSlow {
+  0% {
+    transform: scale(1.0) translate(0%, 0%);
+  }
+  50% {
+    transform: scale(1.07) translate(-1%, -1%);
+  }
+  100% {
+    transform: scale(1.0) translate(0%, 0%);
+  }
+}
+
+.animate-ken-burns {
+  animation: kenBurnsSlow 18s ease-in-out infinite alternate;
+}
+
+/* Card hover elevation & soft glow */
+.card-hover-elevation {
+  transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.3s cubic-bezier(0.2, 0, 0, 1), border-color 0.3s ease;
+}
+.card-hover-elevation:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.08), 0 6px 12px -4px rgba(0, 0, 0, 0.04);
+}
+:is(.dark .card-hover-elevation:hover) {
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(245, 158, 11, 0.15);
+}
+
+/* Heart Pop animation */
+@keyframes heartBurst {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.35) rotate(-6deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.animate-heart-pop {
+  animation: heartBurst 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Progress bar animation */
+@keyframes carouselProgress {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+/* Fade in entrance */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+

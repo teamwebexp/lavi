@@ -26,17 +26,17 @@ export const MemoryCarousel: React.FC<MemoryCarouselProps> = ({ items, onOpenIte
   if (displayItems.length === 0) return null;
 
   return (
-    <section className="py-10 bg-[#FAF8F5]">
+    <section className="py-10 bg-[#FAF8F5] dark:bg-[#141210] transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header with Title and Scroll Arrows */}
         <div className="flex items-end justify-between mb-6">
           <div>
-            <div className="flex items-center gap-1.5 text-xs font-medium text-amber-800 uppercase tracking-wider mb-1">
-              <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+            <div className="flex items-center gap-1.5 text-xs font-medium text-amber-800 dark:text-amber-400 uppercase tracking-wider mb-1">
+              <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
               <span>Highlights</span>
             </div>
-            <h2 className="font-serif-display text-2xl sm:text-3xl font-bold text-stone-900">
+            <h2 className="font-serif-display text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-100">
               Featured Memories
             </h2>
           </div>
@@ -45,14 +45,14 @@ export const MemoryCarousel: React.FC<MemoryCarouselProps> = ({ items, onOpenIte
             <button
               onClick={() => scroll('left')}
               aria-label="Scroll memories left"
-              className="p-2.5 rounded-full border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 shadow-2xs transition-colors cursor-pointer"
+              className="p-2.5 rounded-full border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 shadow-2xs transition-colors cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => scroll('right')}
               aria-label="Scroll memories right"
-              className="p-2.5 rounded-full border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 shadow-2xs transition-colors cursor-pointer"
+              className="p-2.5 rounded-full border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 shadow-2xs transition-colors cursor-pointer"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -62,15 +62,15 @@ export const MemoryCarousel: React.FC<MemoryCarouselProps> = ({ items, onOpenIte
         {/* Horizontal Carousel Container */}
         <div
           ref={scrollRef}
-          className="flex gap-5 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory pb-4 pt-1"
+          className="flex gap-4 sm:gap-5 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory pb-4 pt-1 px-1 -mx-1"
         >
           {displayItems.map((item) => (
             <div
               key={item.id}
               onClick={() => onOpenItem(item)}
-              className="group snap-start shrink-0 w-68 sm:w-80 cursor-pointer rounded-2xl overflow-hidden bg-white border border-stone-200/90 shadow-2xs hover:shadow-md transition-all duration-300"
+              className="group snap-start shrink-0 w-64 sm:w-80 cursor-pointer rounded-2xl overflow-hidden bg-white dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shadow-2xs hover:shadow-lg card-hover-elevation active:scale-[0.98] transition-all duration-300"
             >
-              <div className="relative aspect-4/3 overflow-hidden bg-stone-100">
+              <div className="relative aspect-4/3 overflow-hidden bg-stone-100 dark:bg-stone-800">
                 <img
                   src={item.thumbnail || item.url}
                   alt={item.caption || item.name}
@@ -80,12 +80,12 @@ export const MemoryCarousel: React.FC<MemoryCarouselProps> = ({ items, onOpenIte
                 />
                 
                 {/* Gradient Scrim for Contrast */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-85 transition-opacity" />
 
                 {/* Video Play Indicator */}
                 {item.type === 'video' && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-11 h-11 rounded-full bg-black/50 backdrop-blur-xs flex items-center justify-center text-white border border-white/30 group-hover:scale-110 transition-transform">
+                    <div className="w-11 h-11 rounded-full bg-black/60 backdrop-blur-xs flex items-center justify-center text-white border border-white/30 group-hover:scale-110 group-hover:bg-amber-600 transition-all duration-300 shadow-md">
                       <Play className="w-5 h-5 fill-white translate-x-0.5" />
                     </div>
                   </div>
@@ -93,15 +93,15 @@ export const MemoryCarousel: React.FC<MemoryCarouselProps> = ({ items, onOpenIte
 
                 {/* Duration Badge for Videos */}
                 {item.type === 'video' && item.duration && (
-                  <div className="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-xs text-[11px] font-mono-num text-white">
+                  <div className="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-xs text-[10px] font-mono-num text-white">
                     {item.duration}
                   </div>
                 )}
               </div>
 
               {/* Card Meta Content */}
-              <div className="p-4 space-y-1">
-                <div className="text-[11px] text-stone-500 font-medium">
+              <div className="p-3.5 sm:p-4 space-y-1">
+                <div className="text-[11px] text-stone-500 dark:text-stone-400 font-medium">
                   {new Date(item.createdTime).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
@@ -109,7 +109,7 @@ export const MemoryCarousel: React.FC<MemoryCarouselProps> = ({ items, onOpenIte
                   })}
                   {item.location && <span> · {item.location}</span>}
                 </div>
-                <h4 className="font-serif-display text-base font-semibold text-stone-900 group-hover:text-amber-800 transition-colors line-clamp-1">
+                <h4 className="font-serif-display text-sm sm:text-base font-semibold text-stone-900 dark:text-stone-100 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors line-clamp-1">
                   {item.caption || item.name}
                 </h4>
               </div>

@@ -38,27 +38,27 @@ export const FamilyTimeView: React.FC<FamilyTimeViewProps> = ({
       
       {/* Editorial Header */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
-        <div className="inline-flex items-center gap-2 text-xs font-semibold text-amber-800 uppercase tracking-widest">
-          <Heart className="w-3.5 h-3.5 text-amber-600 fill-amber-600/30" />
+        <div className="inline-flex items-center gap-2 text-xs font-semibold text-amber-800 dark:text-amber-400 uppercase tracking-widest">
+          <Heart className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 fill-amber-600/30" />
           <span>Our Heart &amp; Home</span>
         </div>
-        <h2 className="font-serif-display text-4xl sm:text-5xl lg:text-6xl font-bold text-stone-900 tracking-tight text-balance">
+        <h2 className="font-serif-display text-4xl sm:text-5xl lg:text-6xl font-bold text-stone-900 dark:text-stone-100 tracking-tight text-balance">
           Family Time
         </h2>
-        <p className="font-serif-display text-lg sm:text-xl text-stone-600 italic">
+        <p className="font-serif-display text-lg sm:text-xl text-stone-600 dark:text-stone-300 italic">
           "Family is where our story begins."
         </p>
       </div>
 
       {/* Hero Showcase: Large Featured Family Memory + Editorial Story */}
       {featuredItem && (
-        <div className="rounded-3xl overflow-hidden bg-white border border-stone-200/90 shadow-sm">
+        <div className="rounded-3xl overflow-hidden bg-white dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shadow-sm transition-colors">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 items-stretch">
             
             {/* Visual Photo (Col 7) */}
             <div 
               onClick={() => onOpenItem(featuredItem)}
-              className="lg:col-span-7 relative min-h-[340px] sm:min-h-[460px] bg-stone-100 overflow-hidden cursor-pointer group"
+              className="lg:col-span-7 relative min-h-[340px] sm:min-h-[460px] bg-stone-100 dark:bg-stone-800 overflow-hidden cursor-pointer group"
             >
               <img
                 src={featuredItem.thumbnail || featuredItem.url}
@@ -91,10 +91,10 @@ export const FamilyTimeView: React.FC<FamilyTimeViewProps> = ({
             </div>
 
             {/* Editorial Story Text (Col 5) */}
-            <div className="lg:col-span-5 p-8 sm:p-12 flex flex-col justify-between bg-gradient-to-br from-white via-[#FAF8F5] to-amber-50/20">
+            <div className="lg:col-span-5 p-8 sm:p-12 flex flex-col justify-between bg-gradient-to-br from-white via-[#FAF8F5] to-amber-50/20 dark:from-stone-900 dark:via-stone-900 dark:to-stone-800 transition-colors">
               <div className="space-y-4">
-                <div className="flex items-center gap-2 text-xs text-stone-500 font-medium">
-                  <span className="text-amber-800 font-semibold uppercase tracking-wider">Featured Story</span>
+                <div className="flex items-center gap-2 text-xs text-stone-500 dark:text-stone-400 font-medium">
+                  <span className="text-amber-800 dark:text-amber-400 font-semibold uppercase tracking-wider">Featured Story</span>
                   <span aria-hidden="true">·</span>
                   <span>
                     {new Date(featuredItem.createdTime).toLocaleDateString('en-US', {
@@ -105,18 +105,18 @@ export const FamilyTimeView: React.FC<FamilyTimeViewProps> = ({
                   </span>
                 </div>
 
-                <h3 className="font-serif-display text-2xl sm:text-3xl font-bold text-stone-900 leading-snug">
+                <h3 className="font-serif-display text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-100 leading-snug">
                   {featuredItem.caption || featuredItem.name}
                 </h3>
 
-                <p className="text-stone-600 text-sm leading-relaxed font-sans-body">
+                <p className="text-stone-600 dark:text-stone-300 text-sm leading-relaxed font-sans-body">
                   These are the quiet afternoons and joyful gatherings that define who we are. 
                   Captured unscripted, preserved forever in our family archive.
                 </p>
 
                 {featuredItem.location && (
-                  <div className="flex items-center gap-1.5 text-xs text-stone-500 pt-1">
-                    <MapPin className="w-3.5 h-3.5 text-stone-400" />
+                  <div className="flex items-center gap-1.5 text-xs text-stone-500 dark:text-stone-400 pt-1">
+                    <MapPin className="w-3.5 h-3.5 text-stone-400 dark:text-stone-500" />
                     <span>{featuredItem.location}</span>
                   </div>
                 )}
@@ -125,7 +125,7 @@ export const FamilyTimeView: React.FC<FamilyTimeViewProps> = ({
               <div className="pt-8">
                 <button
                   onClick={() => onOpenItem(featuredItem)}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-stone-900 text-white text-xs font-semibold hover:bg-stone-800 transition-colors shadow-2xs cursor-pointer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-stone-900 dark:bg-amber-600 text-white text-xs font-semibold hover:bg-stone-800 dark:hover:bg-amber-500 transition-colors shadow-2xs cursor-pointer"
                 >
                   <span>View Full Experience</span>
                 </button>
@@ -137,12 +137,12 @@ export const FamilyTimeView: React.FC<FamilyTimeViewProps> = ({
       )}
 
       {/* Family Quote Ribbon */}
-      <div className="rounded-2xl bg-amber-50/60 border border-amber-200/50 p-6 sm:p-8 text-center max-w-3xl mx-auto shadow-2xs">
-        <Quote className="w-7 h-7 text-amber-700/40 mx-auto mb-2" />
-        <blockquote className="font-serif-display text-xl sm:text-2xl font-medium text-stone-800 leading-snug">
+      <div className="rounded-2xl bg-amber-50/60 dark:bg-stone-900 border border-amber-200/50 dark:border-stone-800 p-6 sm:p-8 text-center max-w-3xl mx-auto shadow-2xs transition-colors">
+        <Quote className="w-7 h-7 text-amber-700/40 dark:text-amber-400/40 mx-auto mb-2" />
+        <blockquote className="font-serif-display text-xl sm:text-2xl font-medium text-stone-800 dark:text-stone-200 leading-snug">
           "Some moments become memories before we even realize how special they are."
         </blockquote>
-        <div className="text-xs text-stone-500 font-sans-body mt-2">
+        <div className="text-xs text-stone-500 dark:text-stone-400 font-sans-body mt-2">
           From our family journal
         </div>
       </div>
@@ -154,18 +154,18 @@ export const FamilyTimeView: React.FC<FamilyTimeViewProps> = ({
         {featuredVideo && (
           <div className="lg:col-span-6 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-amber-800 uppercase tracking-wider flex items-center gap-1.5">
-                <Play className="w-3.5 h-3.5 text-amber-700 fill-amber-700" />
+              <span className="text-xs font-semibold text-amber-800 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                <Play className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 fill-amber-700 dark:fill-amber-400" />
                 Featured Motion Video
               </span>
               {featuredVideo.duration && (
-                <span className="text-xs font-mono-num text-stone-500">{featuredVideo.duration}</span>
+                <span className="text-xs font-mono-num text-stone-500 dark:text-stone-400">{featuredVideo.duration}</span>
               )}
             </div>
 
             <div 
               onClick={() => onOpenItem(featuredVideo)}
-              className="relative aspect-16/9 rounded-2xl overflow-hidden bg-stone-900 border border-stone-200/90 shadow-md cursor-pointer group"
+              className="relative aspect-16/9 rounded-2xl overflow-hidden bg-stone-900 border border-stone-200/90 dark:border-stone-800 shadow-md cursor-pointer group"
             >
               <img
                 src={featuredVideo.thumbnail || featuredVideo.url}
@@ -197,10 +197,10 @@ export const FamilyTimeView: React.FC<FamilyTimeViewProps> = ({
         {/* Editorial Asymmetric Magazine Photo Arrangement (Col 6) */}
         <div className="lg:col-span-6 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-stone-700 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
               Candid Snapshots
             </span>
-            <span className="text-xs text-stone-500 font-serif-display italic">Cherished Moments</span>
+            <span className="text-xs text-stone-500 dark:text-stone-400 font-serif-display italic">Cherished Moments</span>
           </div>
 
           <div className="grid grid-cols-2 gap-3.5">
@@ -208,7 +208,7 @@ export const FamilyTimeView: React.FC<FamilyTimeViewProps> = ({
               <div
                 key={item.id}
                 onClick={() => onOpenItem(item)}
-                className={`group relative rounded-2xl overflow-hidden bg-stone-100 border border-stone-200/80 cursor-pointer shadow-2xs hover:shadow-md transition-all ${
+                className={`group relative rounded-2xl overflow-hidden bg-stone-100 dark:bg-stone-800 border border-stone-200/80 dark:border-stone-800 cursor-pointer shadow-2xs hover:shadow-md transition-all ${
                   idx === 0 ? 'aspect-4/3' : 'aspect-square'
                 }`}
               >
@@ -232,13 +232,13 @@ export const FamilyTimeView: React.FC<FamilyTimeViewProps> = ({
       </div>
 
       {/* Horizontal Memory Reel Carousel */}
-      <div className="pt-8 border-t border-stone-200/80">
+      <div className="pt-8 border-t border-stone-200/80 dark:border-stone-800">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <span className="text-xs font-semibold text-amber-800 uppercase tracking-wider block mb-1">
+            <span className="text-xs font-semibold text-amber-800 dark:text-amber-400 uppercase tracking-wider block mb-1">
               Togetherness
             </span>
-            <h3 className="font-serif-display text-2xl sm:text-3xl font-bold text-stone-900">
+            <h3 className="font-serif-display text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-100">
               The Memory Reel
             </h3>
           </div>
@@ -246,14 +246,14 @@ export const FamilyTimeView: React.FC<FamilyTimeViewProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={() => scrollCarousel('left')}
-              className="p-2 rounded-full border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 shadow-2xs transition-colors cursor-pointer"
+              className="p-2 rounded-full border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 shadow-2xs transition-colors cursor-pointer"
               aria-label="Scroll reel left"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => scrollCarousel('right')}
-              className="p-2 rounded-full border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 shadow-2xs transition-colors cursor-pointer"
+              className="p-2 rounded-full border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 shadow-2xs transition-colors cursor-pointer"
               aria-label="Scroll reel right"
             >
               <ChevronRight className="w-4 h-4" />
@@ -269,9 +269,9 @@ export const FamilyTimeView: React.FC<FamilyTimeViewProps> = ({
             <div
               key={item.id}
               onClick={() => onOpenItem(item)}
-              className="group snap-start shrink-0 w-60 sm:w-72 rounded-2xl overflow-hidden bg-white border border-stone-200/80 shadow-2xs hover:shadow-md transition-all cursor-pointer"
+              className="group snap-start shrink-0 w-60 sm:w-72 rounded-2xl overflow-hidden bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 shadow-2xs hover:shadow-md transition-all cursor-pointer"
             >
-              <div className="relative aspect-4/3 overflow-hidden bg-stone-100">
+              <div className="relative aspect-4/3 overflow-hidden bg-stone-100 dark:bg-stone-800">
                 <img
                   src={item.thumbnail || item.url}
                   alt={item.caption || item.name}
@@ -288,10 +288,10 @@ export const FamilyTimeView: React.FC<FamilyTimeViewProps> = ({
                 )}
               </div>
               <div className="p-3.5 space-y-1">
-                <div className="text-[11px] text-stone-500 font-medium">
+                <div className="text-[11px] text-stone-500 dark:text-stone-400 font-medium">
                   {new Date(item.createdTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </div>
-                <h4 className="font-serif-display text-sm font-semibold text-stone-900 group-hover:text-amber-800 transition-colors line-clamp-1">
+                <h4 className="font-serif-display text-sm font-semibold text-stone-900 dark:text-stone-100 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors line-clamp-1">
                   {item.caption || item.name}
                 </h4>
               </div>

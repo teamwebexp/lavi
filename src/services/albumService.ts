@@ -6,6 +6,7 @@ import {
   DEFAULT_PLACEHOLDER_API_URL 
 } from '../config/albumConfig';
 import { SEED_MEMORIES } from '../data/seedMemories';
+import { PRELOADED_DRIVE_MEMORIES } from '../data/drivePreload';
 
 export interface SyncResult {
   success: boolean;
@@ -193,6 +194,18 @@ export async function fetchAlbumMedia(forceRefresh = false): Promise<SyncResult>
         timestamp: cached.timestamp,
       };
     }
+
+    // If configured API matches the preloaded Google Drive folder, load preloaded immediately
+    if (hasConfiguredApi && apiUrl === ALBUM_API_URL && PRELOADED_DRIVE_MEMORIES.length > 0) {
+      cacheAlbum(PRELOADED_DRIVE_MEMORIES, apiUrl);
+      return {
+        success: true,
+        items: PRELOADED_DRIVE_MEMORIES,
+        stats: calculateStats(PRELOADED_DRIVE_MEMORIES),
+        source: 'cache',
+        timestamp: Date.now(),
+      };
+    }
   }
 
   // 2. If no configured API URL, use curated seed memories
@@ -215,13 +228,18 @@ export async function fetchAlbumMedia(forceRefresh = false): Promise<SyncResult>
     const cacheBusterUrl = `${apiUrl}${separator}_cb=${Date.now()}`;
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 14000); // 14s timeout for Google Apps Script cold start
+    const timeoutId = setTimeout(() => {
+      try {
+        controller.abort(new DOMException('Drive sync request timed out (45s)', 'AbortError'));
+      } catch (e) {
+        controller.abort();
+      }
+    }, 45000); // 45s timeout for Google Apps Script cold start
 
     const response = await fetch(cacheBusterUrl, {
       method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      },
+      mode: 'cors',
+      redirect: 'follow',
       signal: controller.signal,
     });
 
@@ -268,22 +286,39 @@ export async function fetchAlbumMedia(forceRefresh = false): Promise<SyncResult>
       timestamp: Date.now(),
     };
   } catch (error: any) {
-    console.error('Error fetching album from API:', error);
+    const isAbort = error?.name === 'AbortError' || String(error?.message).toLowerCase().includes('abort');
+    if (isAbort) {
+      console.warn('Google Drive sync request took longer than expected; using cached album media.');
+    } else {
+      console.warn('Sync connection notice:', error?.message);
+    }
     
-    // Check if we have cached data to fall back to
+    // Check if we have cached data or preloaded data to fall back to
     const cached = getCachedAlbum();
-    if (cached) {
+    if (cached && cached.items.length > 0) {
       return {
-        success: false,
+        success: true,
         items: cached.items,
         stats: calculateStats(cached.items),
         source: 'cache',
-        error: error?.message || 'Network error fetching album',
+        error: isAbort ? 'Drive sync timed out; loaded cached media' : error?.message,
         timestamp: cached.timestamp,
       };
     }
 
-    // Fall back to seed memories if nothing in cache
+    if (PRELOADED_DRIVE_MEMORIES.length > 0) {
+      cacheAlbum(PRELOADED_DRIVE_MEMORIES, apiUrl);
+      return {
+        success: true,
+        items: PRELOADED_DRIVE_MEMORIES,
+        stats: calculateStats(PRELOADED_DRIVE_MEMORIES),
+        source: 'cache',
+        error: isAbort ? 'Drive sync timed out; loaded cached media' : error?.message,
+        timestamp: Date.now(),
+      };
+    }
+
+    // Fall back to seed memories if nothing else
     return {
       success: false,
       items: SEED_MEMORIES,

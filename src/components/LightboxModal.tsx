@@ -15,10 +15,15 @@ import {
   MapPin, 
   Info,
   Clock,
-  Check
+  Check,
+  PlayCircle,
+  PauseCircle,
+  Tv
 } from 'lucide-react';
 import { MediaItem } from '../types/album';
 import { ENABLE_DOWNLOADS } from '../config/albumConfig';
+
+const SLIDESHOW_INTERVAL_MS = 5000;
 
 interface LightboxModalProps {
   item: MediaItem | null;
@@ -49,6 +54,10 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
   const [copiedLink, setCopiedLink] = useState(false);
   const [videoError, setVideoError] = useState(false);
 
+  // Auto-Play Slideshow State (5-second transitions)
+  const [isSlideshowActive, setIsSlideshowActive] = useState(false);
+  const [slideshowProgress, setSlideshowProgress] = useState(0);
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -63,13 +72,29 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
   const handlePrev = () => {
     if (hasPrev) {
       onNavigate(items[currentIndex - 1]);
+    } else if (items.length > 0) {
+      onNavigate(items[items.length - 1]); // Loop back
     }
   };
 
   const handleNext = () => {
     if (hasNext) {
       onNavigate(items[currentIndex + 1]);
+    } else if (items.length > 0) {
+      onNavigate(items[0]); // Loop to start
     }
+  };
+
+  const toggleSlideshow = () => {
+    setIsSlideshowActive(prev => {
+      const nextState = !prev;
+      if (nextState) {
+        onShowToast('Slideshow started · 5s interval');
+      } else {
+        onShowToast('Slideshow paused');
+      }
+      return nextState;
+    });
   };
 
   // Keyboard navigation
@@ -78,6 +103,7 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        setIsSlideshowActive(false);
         onClose();
       } else if (e.key === 'ArrowLeft') {
         handlePrev();
@@ -86,6 +112,12 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
       } else if (e.key === ' ' && item?.type === 'video' && !videoError) {
         e.preventDefault();
         togglePlayPause();
+      } else if (e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        toggleSlideshow();
+      } else if (e.key === ' ' && item?.type === 'image') {
+        e.preventDefault();
+        toggleSlideshow();
       }
     };
 
@@ -93,20 +125,52 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, currentIndex, hasPrev, hasNext, item, videoError]);
 
-  // Reset video state when item changes
+  // Slideshow 5-second automatic progression
+  useEffect(() => {
+    if (!isSlideshowActive || !isOpen || items.length <= 1) {
+      setSlideshowProgress(0);
+      return;
+    }
+
+    // If a video is actively playing, wait until it ends
+    if (isPlaying) {
+      setSlideshowProgress(0);
+      return;
+    }
+
+    const startTime = Date.now();
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(100, (elapsed / SLIDESHOW_INTERVAL_MS) * 100);
+      setSlideshowProgress(progress);
+
+      if (elapsed >= SLIDESHOW_INTERVAL_MS) {
+        clearInterval(interval);
+        // Automatically transition to the next memory (loops to start when reached end)
+        const nextIdx = (currentIndex + 1) % items.length;
+        onNavigate(items[nextIdx]);
+      }
+    }, 40);
+
+    return () => clearInterval(interval);
+  }, [isSlideshowActive, isOpen, currentIndex, items, isPlaying, onNavigate]);
+
+  // Reset video and progress state when item changes
   useEffect(() => {
     setIsPlaying(false);
     setCurrentTime(0);
     setDuration(0);
     setVideoError(false);
+    setSlideshowProgress(0);
   }, [item?.id]);
 
-  // Prevent background scroll when modal open
+  // Turn off slideshow and re-enable scroll when modal closes
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
+      setIsSlideshowActive(false);
     }
     return () => {
       document.body.style.overflow = '';
@@ -251,25 +315,68 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
+      {/* Slideshow 5s Progress Bar */}
+      {isSlideshowActive && (
+        <div className="absolute top-0 left-0 right-0 h-1 bg-white/10 z-30 overflow-hidden">
+          <div 
+            className="h-full bg-amber-400 transition-all duration-75 ease-linear"
+            style={{ width: `${slideshowProgress}%` }}
+          />
+        </div>
+      )}
+
       {/* Top Header Controls Bar */}
       <div className="flex items-center justify-between px-4 sm:px-6 py-4 bg-gradient-to-b from-black/80 via-black/40 to-transparent z-20">
         
         {/* Left: Item Counter & Date */}
-        <div className="text-white text-xs sm:text-sm">
-          <span className="font-mono-num font-semibold text-amber-300">
-            {currentIndex + 1}
-          </span>
-          <span className="text-stone-400"> of </span>
-          <span className="font-mono-num text-stone-300">
-            {items.length}
-          </span>
-          <span className="hidden sm:inline text-stone-500"> · </span>
-          <span className="hidden sm:inline text-stone-300">{formattedDate}</span>
+        <div className="text-white text-xs sm:text-sm flex items-center gap-2">
+          <div>
+            <span className="font-mono-num font-semibold text-amber-300">
+              {currentIndex + 1}
+            </span>
+            <span className="text-stone-400"> of </span>
+            <span className="font-mono-num text-stone-300">
+              {items.length}
+            </span>
+            <span className="hidden sm:inline text-stone-500"> · </span>
+            <span className="hidden sm:inline text-stone-300">{formattedDate}</span>
+          </div>
+
+          {isSlideshowActive && (
+            <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[11px] font-medium animate-pulse">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+              <span>Slideshow playing (5s)</span>
+            </span>
+          )}
         </div>
 
-        {/* Right: Actions (Heart, Share, Download, Info, Close) */}
+        {/* Right: Actions (Slideshow, Heart, Share, Download, Info, Close) */}
         <div className="flex items-center gap-1.5 sm:gap-2">
           
+          {/* Auto-Play Slideshow Toggle */}
+          <button
+            onClick={toggleSlideshow}
+            aria-label={isSlideshowActive ? 'Pause Slideshow' : 'Start Auto-Play Slideshow (5s)'}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+              isSlideshowActive
+                ? 'bg-amber-500 text-stone-950 shadow-md ring-2 ring-amber-400/50'
+                : 'hover:bg-white/10 text-white bg-white/5 border border-white/10'
+            }`}
+            title={isSlideshowActive ? 'Pause Slideshow (Space or S)' : 'Start Hands-Free Slideshow (5s transitions)'}
+          >
+            {isSlideshowActive ? (
+              <>
+                <PauseCircle className="w-4 h-4 text-stone-950" />
+                <span className="hidden sm:inline">Pause (5s)</span>
+              </>
+            ) : (
+              <>
+                <PlayCircle className="w-4 h-4 text-amber-300" />
+                <span className="hidden sm:inline">Slideshow</span>
+              </>
+            )}
+          </button>
+
           {/* Favorite */}
           <button
             onClick={() => onToggleFavorite(item.id)}
@@ -397,10 +504,11 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
         ) : (
           <div className="relative max-w-5xl max-h-[80vh] flex items-center justify-center">
             <img
+              key={item.id}
               src={item.url}
               alt={item.caption || item.name}
               referrerPolicy="no-referrer"
-              className="max-h-[80vh] max-w-full rounded-xl object-contain shadow-2xl transition-all"
+              className="max-h-[80vh] max-w-full rounded-xl object-contain shadow-2xl transition-all duration-700 ease-out animate-in fade-in"
             />
           </div>
         )}

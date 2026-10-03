@@ -9,7 +9,6 @@ import { MediaGrid } from './components/MediaGrid';
 import { TimelineView } from './components/TimelineView';
 import { FamilyTimeView } from './components/FamilyTimeView';
 import { LightboxModal } from './components/LightboxModal';
-import { SyncSettingsModal } from './components/SyncSettingsModal';
 import { LoadingSkeleton } from './components/LoadingSkeleton';
 import { ErrorState } from './components/ErrorState';
 import { ToastNotification } from './components/ToastNotification';
@@ -17,6 +16,7 @@ import { ToastNotification } from './components/ToastNotification';
 import { MediaItem, FilterState, MonthGroup, AlbumStats } from './types/album';
 import { useFavorites } from './hooks/useFavorites';
 import { useLifeCounter } from './hooks/useLifeCounter';
+import { useTheme } from './hooks/useTheme';
 import { 
   fetchAlbumMedia, 
   groupMediaByMonth, 
@@ -47,15 +47,13 @@ export default function App() {
   const [activeLightboxItem, setActiveLightboxItem] = useState<MediaItem | null>(null);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
-  // Sync settings modal
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-
   // Toast message
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Custom Hooks
   const { favorites, toggleFavorite, isFavorite, totalFavorites } = useFavorites();
   const lifeCounter = useLifeCounter();
+  const { isDarkMode, toggleTheme } = useTheme();
 
   // Search & Filter State
   const [filters, setFilters] = useState<FilterState>({
@@ -228,16 +226,15 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-800 pb-16 md:pb-0">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] dark:bg-[#121110] text-stone-800 dark:text-stone-100 pb-16 md:pb-0 transition-colors duration-200">
       
       {/* Top Bar Navigation */}
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        onRefresh={() => loadAlbumData(true)}
-        isRefreshing={isRefreshing}
-        onOpenSettings={() => setIsSettingsOpen(true)}
         favoritesCount={totalFavorites}
+        isDarkMode={isDarkMode}
+        onToggleTheme={toggleTheme}
       />
 
       {/* Main Content Area */}
@@ -260,14 +257,13 @@ export default function App() {
             {/* VIEW 1: HOME PAGE */}
             {activeTab === 'home' && (
               <div className="space-y-12">
-                {/* Hero Section */}
+                {/* Hero Section with Mobile Optimized Animated Photo Slide Carousel */}
                 <HeroSection
                   stats={stats}
                   lifeCounter={lifeCounter}
+                  items={items}
                   featuredItem={featuredItem}
                   onExplore={handleExploreMemories}
-                  onRefresh={() => loadAlbumData(true)}
-                  isRefreshing={isRefreshing}
                   onOpenItem={handleOpenItem}
                 />
 
@@ -294,25 +290,24 @@ export default function App() {
                   <LifeCounterCard
                     lifeCounter={lifeCounter}
                     totalMemories={stats.totalItems}
-                    onOpenSettings={() => setIsSettingsOpen(true)}
                   />
 
                   {/* Recent Memories Section Preview */}
                   <div className="pt-6">
-                    <div className="flex items-center justify-between mb-6 pb-2 border-b border-stone-200/80">
+                    <div className="flex items-center justify-between mb-6 pb-2 border-b border-stone-200/80 dark:border-stone-800">
                       <div>
-                        <div className="text-xs font-semibold text-amber-800 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                          <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                        <div className="text-xs font-semibold text-amber-800 dark:text-amber-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                          <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                           <span>Latest Additions</span>
                         </div>
-                        <h3 className="font-serif-display text-2xl sm:text-3xl font-bold text-stone-900">
+                        <h3 className="font-serif-display text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-100">
                           Recent Moments
                         </h3>
                       </div>
 
                       <button
                         onClick={() => setActiveTab('album')}
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-800 hover:text-amber-800 transition-colors cursor-pointer group"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-800 dark:text-stone-200 hover:text-amber-800 dark:hover:text-amber-400 transition-colors cursor-pointer group"
                       >
                         <span>View All {stats.totalItems} Memories</span>
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -336,13 +331,13 @@ export default function App() {
             {activeTab === 'album' && (
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
                 <div className="mb-8">
-                  <div className="text-xs font-semibold text-amber-800 uppercase tracking-wider mb-1">
+                  <div className="text-xs font-semibold text-amber-800 dark:text-amber-400 uppercase tracking-wider mb-1">
                     Complete Collection
                   </div>
-                  <h2 className="font-serif-display text-3xl sm:text-4xl font-bold text-stone-900">
+                  <h2 className="font-serif-display text-3xl sm:text-4xl font-bold text-stone-900 dark:text-stone-100">
                     The Family Archive
                   </h2>
-                  <p className="text-xs sm:text-sm text-stone-500 mt-1">
+                  <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1">
                     All high-resolution photographs and motion videos arranged chronologically.
                   </p>
                 </div>
@@ -391,13 +386,13 @@ export default function App() {
             {activeTab === 'videos' && (
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
                 <div className="mb-8">
-                  <div className="text-xs font-semibold text-amber-800 uppercase tracking-wider mb-1">
+                  <div className="text-xs font-semibold text-amber-800 dark:text-amber-400 uppercase tracking-wider mb-1">
                     Motion &amp; Sound
                   </div>
-                  <h2 className="font-serif-display text-3xl sm:text-4xl font-bold text-stone-900">
+                  <h2 className="font-serif-display text-3xl sm:text-4xl font-bold text-stone-900 dark:text-stone-100">
                     Family Video Moments
                   </h2>
-                  <p className="text-xs sm:text-sm text-stone-500 mt-1">
+                  <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1">
                     Live motion clips and home recordings that play directly in your browser.
                   </p>
                 </div>
@@ -424,25 +419,25 @@ export default function App() {
             {activeTab === 'favorites' && (
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
                 <div className="mb-8">
-                  <div className="text-xs font-semibold text-rose-800 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                  <div className="text-xs font-semibold text-rose-800 dark:text-rose-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
                     <Heart className="w-3.5 h-3.5 fill-rose-600 text-rose-600" />
                     <span>Cherished Keepsakes</span>
                   </div>
-                  <h2 className="font-serif-display text-3xl sm:text-4xl font-bold text-stone-900">
+                  <h2 className="font-serif-display text-3xl sm:text-4xl font-bold text-stone-900 dark:text-stone-100">
                     Bookmarked Favorites
                   </h2>
-                  <p className="text-xs sm:text-sm text-stone-500 mt-1">
+                  <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1">
                     Your starred memories, saved locally so they remain every time you return.
                   </p>
                 </div>
 
                 {filteredItems.length === 0 ? (
-                  <div className="py-20 text-center rounded-3xl bg-stone-50 border border-stone-200/80 p-8 max-w-md mx-auto">
-                    <Heart className="w-12 h-12 text-stone-300 mx-auto mb-3" />
-                    <h3 className="font-serif-display text-xl font-bold text-stone-800">
+                  <div className="py-20 text-center rounded-3xl bg-stone-50 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 p-8 max-w-md mx-auto transition-colors">
+                    <Heart className="w-12 h-12 text-stone-300 dark:text-stone-600 mx-auto mb-3" />
+                    <h3 className="font-serif-display text-xl font-bold text-stone-800 dark:text-stone-200">
                       No favorites yet
                     </h3>
-                    <p className="text-xs sm:text-sm text-stone-500 mt-1">
+                    <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1">
                       Tap the heart icon on any photo or video to bookmark your most treasured family memories.
                     </p>
                   </div>
@@ -463,15 +458,15 @@ export default function App() {
       </main>
 
       {/* Elegant Footer */}
-      <footer className="border-t border-stone-200/70 bg-[#FAF8F5] py-10 mt-16 text-center text-xs text-stone-500">
+      <footer className="border-t border-stone-200/70 dark:border-stone-800 bg-[#FAF8F5] dark:bg-[#121110] py-10 mt-16 text-center text-xs text-stone-500 dark:text-stone-400 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
-          <p className="font-serif-display text-base font-semibold text-stone-800">
+          <p className="font-serif-display text-base font-semibold text-stone-800 dark:text-stone-200">
             {ALBUM_TITLE}
           </p>
-          <p className="text-stone-400">
+          <p className="text-stone-400 dark:text-stone-500">
             {ALBUM_SUBTITLE}
           </p>
-          <div className="pt-2 text-[11px] text-stone-400">
+          <div className="pt-2 text-[11px] text-stone-400 dark:text-stone-500">
             Personal Keepsake &amp; Google Drive Synchronized Media Album
           </div>
         </div>
@@ -486,14 +481,6 @@ export default function App() {
         onNavigate={(newItem) => setActiveLightboxItem(newItem)}
         isFavorite={activeLightboxItem ? isFavorite(activeLightboxItem.id) : false}
         onToggleFavorite={toggleFavorite}
-        onShowToast={showToast}
-      />
-
-      {/* Google Drive Sync & Milestone Settings Modal */}
-      <SyncSettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        onRefreshAlbum={() => loadAlbumData(true)}
         onShowToast={showToast}
       />
 
