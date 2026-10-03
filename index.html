@@ -16,6 +16,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script>
       (function() {
+        // Prevent "Cannot set property fetch of #<Window> which has only a getter"
+        try {
+          var _origFetch = window.fetch;
+          if (typeof _origFetch === 'function') {
+            var _activeFetch = _origFetch;
+            try {
+              Object.defineProperty(window, 'fetch', {
+                get: function() { return _activeFetch; },
+                set: function(val) { _activeFetch = val; },
+                configurable: true,
+                enumerable: true
+              });
+            } catch (e1) {
+              if (typeof Window !== 'undefined' && Window.prototype) {
+                try {
+                  Object.defineProperty(Window.prototype, 'fetch', {
+                    get: function() { return _activeFetch; },
+                    set: function(val) { _activeFetch = val; },
+                    configurable: true,
+                    enumerable: true
+                  });
+                } catch (e2) {}
+              }
+            }
+          }
+        } catch (e) {}
+
         try {
           var saved = localStorage.getItem('family_album_theme_mode');
           if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
